@@ -27,7 +27,7 @@ public class Car {
     private String model;
 
     @Column(name = "`year`")
-    private int year;
+    private Integer year;
 
     private BigDecimal price;
 
@@ -38,7 +38,7 @@ public class Car {
     private String description;
 
     @Column(name = "is_available")
-    private boolean isAvailable;
+    private Boolean available;
 
     @Column(name = "created_at")
     private LocalDate createdAt;
@@ -48,6 +48,4 @@ public class Car {
 
     @OneToMany(mappedBy = "car")
     private List<Review> reviews;
-
-
 }
