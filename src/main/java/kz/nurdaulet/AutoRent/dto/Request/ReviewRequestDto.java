@@ -17,4 +17,7 @@ public class ReviewRequestDto {
     @NotNull
     @Size(min = 10, max = 1000)
     private String comment;
+
+    @NotNull
+    private Long carId;
 }

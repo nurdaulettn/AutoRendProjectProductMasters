@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReviewsResponseDto {
+public class ReviewResponseDto {
     private Long id;
     private Long carId;
     private Long clientId;
@@ -19,7 +19,7 @@ public class ReviewsResponseDto {
     private String comment;
     private LocalDateTime createdAt;
 
-    public ReviewsResponseDto(Review review) {
+    public ReviewResponseDto(Review review) {
         this.id = review.getId();
         this.carId = review.getCar().getId();
         this.clientId = review.getClient().getId();

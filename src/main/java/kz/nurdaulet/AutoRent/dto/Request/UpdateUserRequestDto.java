@@ -19,7 +19,7 @@ public class UpdateUserRequestDto {
     private String lastName;
 
     @NotBlank
-    private String phone;
+    private String phoneNumber;
 
     @NotBlank
     private String currentPassword;
