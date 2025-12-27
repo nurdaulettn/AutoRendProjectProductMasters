@@ -7,6 +7,9 @@ import kz.nurdaulet.AutoRent.model.Booking;
 import kz.nurdaulet.AutoRent.model.BookingStatus;
 import kz.nurdaulet.AutoRent.model.Car;
 import kz.nurdaulet.AutoRent.model.User;
+import kz.nurdaulet.AutoRent.model.exeptions.BookingNotFoundException;
+import kz.nurdaulet.AutoRent.model.exeptions.CarNotFoundException;
+import kz.nurdaulet.AutoRent.model.exeptions.UserNotFoundException;
 import kz.nurdaulet.AutoRent.repository.BookingRepository;
 import kz.nurdaulet.AutoRent.repository.CarRepository;
 import kz.nurdaulet.AutoRent.repository.UserRepository;
@@ -31,7 +34,7 @@ public class BookingService {
 
     public BookingResponseDto createBooking(BookingRequestDto request) {
         User user = getCurrentUser();
-        Car car = carRepository.findById(request.getCarId()).orElseThrow(() -> new RuntimeException("Car not found"));
+        Car car = carRepository.findById(request.getCarId()).orElseThrow(() -> new CarNotFoundException("Car not found"));
 
         if (!car.getAvailable()) {
             throw new RuntimeException("Car is not available");
@@ -71,7 +74,7 @@ public class BookingService {
 
     public BookingResponseDto getBookingById(Long id) {
         User user = getCurrentUser();
-        Booking booking = bookingRepository.findById(id).orElseThrow(() -> new RuntimeException("Booking not found"));
+        Booking booking = bookingRepository.findById(id).orElseThrow(() -> new BookingNotFoundException("Booking not found"));
 
         boolean isClient = booking.getClient().getId().equals(user.getId());
         boolean isOwner = booking.getCar().getId().equals(user.getId());
@@ -86,7 +89,7 @@ public class BookingService {
 
     public BookingResponseDto updateBookingStatus(Long id, UpdateBookingStatusDto request) {
         User user = getCurrentUser();
-        Booking booking = bookingRepository.findById(id).orElseThrow(() -> new RuntimeException("Booking not found"));
+        Booking booking = bookingRepository.findById(id).orElseThrow(() -> new BookingNotFoundException("Booking not found"));
 
         if (!booking.getCar().getOwner().getId().equals(user.getId())) {
             throw new RuntimeException("You are not a car owner");
@@ -136,7 +139,7 @@ public class BookingService {
 
     public BookingResponseDto cancelBooking(Long id) {
         User user = getCurrentUser();
-        Booking booking = bookingRepository.findById(id).orElseThrow(() -> new RuntimeException("Booking not found"));
+        Booking booking = bookingRepository.findById(id).orElseThrow(() -> new BookingNotFoundException("Booking not found"));
 
         if(!booking.getClient().getId().equals(user.getId())) {
             throw new RuntimeException("You are not a car owner");
@@ -153,6 +156,6 @@ public class BookingService {
     public User getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
-        return userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 }

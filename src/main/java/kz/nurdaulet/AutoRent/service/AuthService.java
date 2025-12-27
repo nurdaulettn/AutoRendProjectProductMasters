@@ -4,6 +4,7 @@ import kz.nurdaulet.AutoRent.dto.Request.LoginRequestDto;
 import kz.nurdaulet.AutoRent.dto.Request.RegisterRequestDto;
 import kz.nurdaulet.AutoRent.dto.Response.AuthResponseDto;
 import kz.nurdaulet.AutoRent.model.User;
+import kz.nurdaulet.AutoRent.model.exeptions.UserNotFoundException;
 import kz.nurdaulet.AutoRent.repository.UserRepository;
 import kz.nurdaulet.AutoRent.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +51,7 @@ public class AuthService {
                 )
         );
 
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new UserNotFoundException("User not found"));
         String token = jwtUtil.generateToken(user.getEmail());
         return new AuthResponseDto(token, user);
     }

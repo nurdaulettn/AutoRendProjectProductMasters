@@ -5,6 +5,8 @@ import kz.nurdaulet.AutoRent.dto.Response.CarResponseDto;
 import kz.nurdaulet.AutoRent.model.Car;
 import kz.nurdaulet.AutoRent.model.Role;
 import kz.nurdaulet.AutoRent.model.User;
+import kz.nurdaulet.AutoRent.model.exeptions.CarNotFoundException;
+import kz.nurdaulet.AutoRent.model.exeptions.UserNotFoundException;
 import kz.nurdaulet.AutoRent.repository.CarRepository;
 import kz.nurdaulet.AutoRent.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -62,13 +64,13 @@ public class CarService {
     }
 
     public CarResponseDto getCarById(Long id) {
-        Car car = carRepository.findById(id).orElseThrow(() -> new RuntimeException("Car not found"));
+        Car car = carRepository.findById(id).orElseThrow(() -> new CarNotFoundException("Car not found"));
         return new CarResponseDto(car);
     }
 
     public CarResponseDto updateCar(Long id, CarRequestDto request) {
         User currentUser = getCurrentUser();
-        Car car = carRepository.findById(id).orElseThrow(() -> new RuntimeException("Car not found"));
+        Car car = carRepository.findById(id).orElseThrow(() -> new CarNotFoundException("Car not found"));
 
         if(!car.getOwner().getId().equals(currentUser.getId())) {
             throw new RuntimeException("You can not update this car");
@@ -94,7 +96,7 @@ public class CarService {
 
     public void deleteCar(Long id) {
         User currentUser = getCurrentUser();
-        Car car = carRepository.findById(id).orElseThrow(() -> new RuntimeException("Car not found"));
+        Car car = carRepository.findById(id).orElseThrow(() -> new CarNotFoundException("Car not found"));
 
         if(!car.getOwner().getId().equals(currentUser.getId())) {
             throw new RuntimeException("You can not delete this car");
@@ -124,6 +126,6 @@ public class CarService {
     private User getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
-        return userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 }

@@ -3,6 +3,9 @@ package kz.nurdaulet.AutoRent.service;
 import kz.nurdaulet.AutoRent.dto.Request.ReviewRequestDto;
 import kz.nurdaulet.AutoRent.dto.Response.ReviewResponseDto;
 import kz.nurdaulet.AutoRent.model.*;
+import kz.nurdaulet.AutoRent.model.exeptions.CarNotFoundException;
+import kz.nurdaulet.AutoRent.model.exeptions.ReviewNotFoundException;
+import kz.nurdaulet.AutoRent.model.exeptions.UserNotFoundException;
 import kz.nurdaulet.AutoRent.repository.BookingRepository;
 import kz.nurdaulet.AutoRent.repository.CarRepository;
 import kz.nurdaulet.AutoRent.repository.ReviewRepository;
@@ -25,14 +28,14 @@ public class ReviewService {
     public final BookingRepository bookingRepository;
 
     public List<ReviewResponseDto> getReviewsByCarId(Long carId){
-        Car car = carRepository.findById(carId).orElseThrow(() -> new RuntimeException("Car not found"));
+        Car car = carRepository.findById(carId).orElseThrow(() -> new CarNotFoundException("Car not found"));
         List<Review> reviews = reviewRepository.findByCarId(carId);
         return reviews.stream().map(ReviewResponseDto::new).collect(Collectors.toList());
     }
 
-    public ReviewResponseDto createReview(ReviewRequestDto request){
+    public ReviewResponseDto createReview(Long carId, ReviewRequestDto request){
         User user = getCurrentUser();
-        Car car = carRepository.findById(request.getCarId()).orElseThrow(() -> new RuntimeException("Car not found"));
+        Car car = carRepository.findById(carId).orElseThrow(() -> new CarNotFoundException("Car not found"));
 
         List<Booking> bookings = bookingRepository.findByClientIdAndStatus(user.getId(), BookingStatus.COMPLETED);
         boolean hasRented = false;
@@ -63,13 +66,13 @@ public class ReviewService {
     }
 
     public ReviewResponseDto getReviewById(Long id){
-        Review review = reviewRepository.findById(id).orElseThrow(() -> new RuntimeException("Review not found"));
+        Review review = reviewRepository.findById(id).orElseThrow(() -> new ReviewNotFoundException("Review not found"));
         return new ReviewResponseDto(review);
     }
 
     public void deleteReview(Long id){
         User user = getCurrentUser();
-        Review review = reviewRepository.findById(id).orElseThrow(() -> new RuntimeException("Review not found"));
+        Review review = reviewRepository.findById(id).orElseThrow(() -> new ReviewNotFoundException("Review not found"));
         if(!review.getClient().getId().equals(user.getId())){
             throw new RuntimeException("You can't delete a review that written by another user");
         }
@@ -78,7 +81,7 @@ public class ReviewService {
 
     public ReviewResponseDto updateReview(Long id, ReviewRequestDto request){
         User client = getCurrentUser();
-        Review review = reviewRepository.findById(id).orElseThrow(() -> new RuntimeException("Review not found"));
+        Review review = reviewRepository.findById(id).orElseThrow(() -> new ReviewNotFoundException("Review not found"));
         if(!review.getClient().getId().equals(client.getId())){
             throw new RuntimeException("You can't update a review that written by another user");
         }
@@ -98,6 +101,6 @@ public class ReviewService {
     public User getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
-        return userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User Not Found"));
+        return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User Not Found"));
     }
 }

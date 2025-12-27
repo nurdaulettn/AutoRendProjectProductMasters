@@ -3,6 +3,7 @@ package kz.nurdaulet.AutoRent.service;
 import kz.nurdaulet.AutoRent.dto.Request.UpdateUserRequestDto;
 import kz.nurdaulet.AutoRent.dto.Response.UserResponseDto;
 import kz.nurdaulet.AutoRent.model.User;
+import kz.nurdaulet.AutoRent.model.exeptions.UserNotFoundException;
 import kz.nurdaulet.AutoRent.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -18,13 +19,13 @@ public class UserService {
 
     public UserResponseDto getCurrentUser(){
         String email = getCurrentUserEmail();
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
         return new UserResponseDto(user);
     }
 
     public UserResponseDto updateUser(UpdateUserRequestDto request){
         String email = getCurrentUserEmail();
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
         if (request.getFirstName() != null && !request.getFirstName().isBlank()){
             user.setFirstName(request.getFirstName());
         }
@@ -43,7 +44,7 @@ public class UserService {
 
     public void deleteUser(){
         String email = getCurrentUserEmail();
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
         userRepository.delete(user);
     }
 
