@@ -28,7 +28,6 @@ public class ReviewService {
     public final BookingRepository bookingRepository;
 
     public List<ReviewResponseDto> getReviewsByCarId(Long carId){
-        Car car = carRepository.findById(carId).orElseThrow(() -> new CarNotFoundException("Car not found"));
         List<Review> reviews = reviewRepository.findByCarId(carId);
         return reviews.stream().map(ReviewResponseDto::new).collect(Collectors.toList());
     }
@@ -43,6 +42,7 @@ public class ReviewService {
         for(Booking booking : bookings){
             if(booking.getCar().getId().equals(car.getId())){
                 hasRented = true;
+                break;
             }
         }
         if(!hasRented){

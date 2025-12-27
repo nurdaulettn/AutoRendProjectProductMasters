@@ -126,7 +126,7 @@ public class BookingService {
         User user = getCurrentUser();
 
         List<Car> cars = user.getCars();
-        if (cars.isEmpty() || cars == null || cars.size() == 0) {
+        if (cars.isEmpty()) {
             throw new RuntimeException("No cars found");
         }
         List<Booking> bookings = bookingRepository.findByCarId(cars.getFirst().getId());

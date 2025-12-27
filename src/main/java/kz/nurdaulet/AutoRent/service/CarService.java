@@ -53,7 +53,7 @@ public class CarService {
         List<Car> cars;
 
         if(onlyAvailable != null && onlyAvailable) {
-            cars = carRepository.findAll();
+            cars = carRepository.findByAvailableTrue();
         }else{
             cars = carRepository.findAll();
         }
