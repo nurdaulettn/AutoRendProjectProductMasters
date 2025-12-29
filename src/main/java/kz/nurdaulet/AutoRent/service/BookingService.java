@@ -93,6 +93,7 @@ public class BookingService {
         if (!booking.getCar().getOwner().getId().equals(user.getId())) {
             throw new RuntimeException("You are not a car owner");
         }
+
         BookingStatus oldStatus = booking.getStatus();
         BookingStatus newStatus = request.getStatus();
 
@@ -109,6 +110,7 @@ public class BookingService {
         }
         booking.setStatus(newStatus);
         Booking savedBooking = bookingRepository.save(booking);
+
         return new BookingResponseDto(savedBooking);
     }
 
